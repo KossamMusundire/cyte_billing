@@ -1,0 +1,28 @@
+{% extends "templates/web.html" %}
+{% block title %}Billing{% endblock %}
+{% block page_content %}
+<div id="billing-app">
+    <h2>Billing Portal</h2>
+    <ul class="nav nav-tabs">
+        <li><a href="/billing/subscriptions">Subscriptions</a></li>
+        <li class="active"><a href="/billing/invoices">Invoices</a></li>
+        <li><a href="/billing/balances">Balances</a></li>
+    </ul>
+    <div id="content" style="margin-top:20px">Loading...</div>
+</div>
+<script>
+frappe.call('cyte_billing.api.get_billing_data', {tab: 'invoices'}).then(r => {
+    let invoices = r.message.invoices;
+    let html = `<table class="table"><thead><tr><th>Invoice</th><th>Status</th><th>Date</th><th>Total</th><th>Paid</th><th>Due</th><th>Actions</th></tr></thead><tbody>`;
+    invoices.forEach(inv => {
+        let pill = `<span class="indicator-pill ${inv.status_pill.color}">${inv.status_pill.label}</span>`;
+        let dateRange = inv.custom_billing_period || inv.posting_date;
+        let payNow = inv.payment_request ? `<a href="${inv.payment_request.payment_url}" class="btn btn-sm btn-primary">Pay Now</a>` : '';
+        let download = `<a href="/api/method/frappe.utils.print_format.download_pdf?doctype=Sales%20Invoice&name=${inv.name}" class="btn btn-sm btn-default">Download Invoice</a>`;
+        html += `<tr><td>${inv.name}</td><td>${pill}</td><td>${dateRange}</td><td>$${inv.grand_total}</td><td>$${(inv.grand_total - inv.outstanding_amount).toFixed(2)}</td><td>$${inv.outstanding_amount}</td><td>${download} ${payNow}</td></tr>`;
+    });
+    html += '</tbody></table>';
+    document.getElementById('content').innerHTML = html;
+});
+</script>
+{% endblock %}

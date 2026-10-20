@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cyte-billing"
+version = "1.0.0"
+description = "Subscription billing automation and customer portal for Frappe and ERPNext"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "CyteERP" }]
+license = { text = "Proprietary" }
+classifiers = [
+  "Framework :: Frappe",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["cyte_billing*"]
+
+[tool.setuptools.package-data]
+cyte_billing = ["modules.txt", "www/**/*.html", "www/**/*.js", "www/**/*.css", "**/*.json"]
